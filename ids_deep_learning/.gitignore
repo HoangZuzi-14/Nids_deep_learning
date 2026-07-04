@@ -1,0 +1,51 @@
+*.csv
+*.zip
+datasets/
+data/raw/
+data/cache/
+
+venv/
+env/
+.venv/
+.env
+.env.*
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+
+*.h5
+*.pt
+*.pth
+*.pkl
+*.onnx
+*.onnx.data
+
+# Generated model/export artifacts
+artifacts/
+saved_models/
+
+# Generated experiment reports and plots
+results/*.json
+results/*.pdf
+results/*.png
+results/*.csv
+results/plots/
+results/*_report.md
+results/*_summary.md
+results/*_strategy.md
+
+# Local agent/workflow notes
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+CHECKPOINT.md
+PLAN.md
+SPEC.md
+TASKLIST.md
+docs/superpowers/
+
+# Local/runtime files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db

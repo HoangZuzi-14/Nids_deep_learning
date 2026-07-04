@@ -1,0 +1,21 @@
+seed: 42
+split:
+  test_size: 0.2
+  val_size: 0.2
+  stratify: true
+preprocessing:
+  scaler: standard
+  drop_duplicates: true
+  drop_constant_columns: true
+imbalance:
+  rare_threshold: 0.001
+  focal_sampler_max_ratio: 0.01
+  weighted_sampler_max_ratio: 0.05
+  mild_weight_max_ratio: 0.2
+  max_samples_per_majority_class: 300000
+  gan_enabled: false
+models:
+  batch_size: 512
+  epochs: 30
+  learning_rate: 0.001
+  patience: 10
