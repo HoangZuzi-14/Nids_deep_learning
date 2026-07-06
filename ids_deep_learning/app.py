@@ -71,7 +71,7 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allowed_html=True
+    unsafe_allow_html=True
 )
 
 
@@ -83,6 +83,8 @@ def load_nids_artifacts(dataset: str):
         return None
         
     scaler = joblib.load(artifact_dir / "scaler.pkl")
+    imputer_path = artifact_dir / "imputer.pkl"
+    imputer = joblib.load(imputer_path) if imputer_path.exists() else None
     encoders_dict = joblib.load(artifact_dir / "encoders.pkl")
     cat_encoders = encoders_dict.get("categorical", {})
     
@@ -94,6 +96,7 @@ def load_nids_artifacts(dataset: str):
     
     return {
         "scaler": scaler,
+        "imputer": imputer,
         "cat_encoders": cat_encoders,
         "label_mapping": label_mapping,
         "inverse_labels": inverse_labels,
@@ -106,6 +109,7 @@ def preprocess_flow_data(df: pd.DataFrame, artifacts, dataset: str):
     feature_names = artifacts["feature_names"]
     cat_encoders = artifacts["cat_encoders"]
     scaler = artifacts["scaler"]
+    imputer = artifacts.get("imputer")
 
     # Align NSL-KDD if no header
     if dataset == "nsl_kdd" and df.shape[1] == 43:
@@ -147,14 +151,15 @@ def preprocess_flow_data(df: pd.DataFrame, artifacts, dataset: str):
             # Handle out-of-vocabulary categoricals safely
             X_df[[col]] = encoder.transform(X_df[[col]].astype(str))
 
-    X_scaled = scaler.transform(X_df)
+    X_model = imputer.transform(X_df) if imputer is not None else X_df
+    X_scaled = scaler.transform(X_model)
     return X_df, X_scaled
 
 
 def main():
     st.sidebar.markdown(
         "<h2 style='text-align: center;'>🛡️ NIDS Engine</h2>",
-        unsafe_allowed_html=True
+    unsafe_allow_html=True
     )
     
     # 1. Dataset Selection
@@ -243,8 +248,8 @@ def main():
                 # RF
                 if model_sel == "RandomForest":
                     rf = joblib.load(artifact_dir / "RandomForest.pkl")
-                    preds = rf.predict(X_df)
-                    probs = rf.predict_proba(X_df)
+                    preds = rf.predict(X_scaled)
+                    probs = rf.predict_proba(X_scaled)
                     pred_labels = [inverse_labels[int(p)] for p in preds]
                     confidences = probs.max(axis=1)
                     
@@ -278,8 +283,8 @@ def main():
                     is_hybrid = True
                     # 1. Classifier probabilities (RF default)
                     rf = joblib.load(artifact_dir / "RandomForest.pkl")
-                    preds = rf.predict(X_df)
-                    probs = rf.predict_proba(X_df)
+                    preds = rf.predict(X_scaled)
+                    probs = rf.predict_proba(X_scaled)
                     
                     # 2. Unsupervised Autoencoder scores
                     # Let's load the PyTorch Autoencoder. We will dynamically fit a small one on benign-only samples
@@ -289,9 +294,6 @@ def main():
                     
                     if not ae_path.exists():
                         st.warning("Autoencoder results not found, fitting a fast Autoencoder for real-time anomaly analysis...")
-                        # Quick fit on benign
-                        benign_mask = df.index < df.shape[0]  # dummy
-                        # Let's fit on the benign-only subset of the uploaded file!
                         normal_samples = X_scaled
                         ae_model, ae_scaler = fit_autoencoder(normal_samples, normal_samples, epochs=5, latent_dim=16)
                     else:
@@ -300,7 +302,7 @@ def main():
                         ae_model, ae_scaler = fit_autoencoder(normal_samples, normal_samples, epochs=5, latent_dim=16)
                         
                     # Anomaly scores
-                    anomaly_scores = compute_autoencoder_scores(ae_model, ae_scaler, X_df.values)
+                    anomaly_scores = compute_autoencoder_scores(ae_model, ae_scaler, X_scaled)
                     # MinMax normalization
                     norm_scores = (anomaly_scores - anomaly_scores.min()) / (anomaly_scores.max() - anomaly_scores.min() + 1e-8)
                     
@@ -361,7 +363,7 @@ def main():
                     <div class="metric-value">{len(pred_labels)}</div>
                 </div>
                 """,
-                unsafe_allowed_html=True
+                unsafe_allow_html=True
             )
         with col2:
             st.markdown(
@@ -371,7 +373,7 @@ def main():
                     <div class="metric-value" style="color: #4ade80;">{n_clean}</div>
                 </div>
                 """,
-                unsafe_allowed_html=True
+                unsafe_allow_html=True
             )
         with col3:
             st.markdown(
@@ -381,7 +383,7 @@ def main():
                     <div class="metric-value-alert">{n_alerts}</div>
                 </div>
                 """,
-                unsafe_allowed_html=True
+                unsafe_allow_html=True
             )
         with col4:
             max_conf = max(confidences) if confidences else 0.0
@@ -392,7 +394,7 @@ def main():
                     <div class="metric-value" style="color: #fbbf24;">{max_conf * 100:.2f}%</div>
                 </div>
                 """,
-                unsafe_allowed_html=True
+                unsafe_allow_html=True
             )
             
         st.markdown("---")

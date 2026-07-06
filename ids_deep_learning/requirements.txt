@@ -9,4 +9,7 @@ joblib
 pytest
 xgboost
 lightgbm
-
+onnx
+onnxruntime
+streamlit
+fpdf2

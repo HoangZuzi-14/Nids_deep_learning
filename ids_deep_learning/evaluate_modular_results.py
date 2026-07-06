@@ -18,6 +18,26 @@ def _round(value, digits: int = 6):
     return round(float(value), digits)
 
 
+def is_valid_model_evaluation(metrics: dict, min_test_support: int = 2) -> tuple[bool, str]:
+    confusion = metrics.get("confusion_matrix", [])
+    if len(confusion) < 2:
+        return False, "degenerate_one_class"
+
+    report = metrics.get("classification_report", {})
+    class_rows = [value for key, value in report.items() if str(key).isdigit()]
+    active_classes = [
+        row for row in class_rows if float(row.get("support", 0.0)) > 0.0
+    ]
+    if len(active_classes) < 2:
+        return False, "degenerate_one_class"
+
+    total_support = sum(float(row.get("support", 0.0)) for row in active_classes)
+    if total_support < min_test_support:
+        return False, "too_few_test_samples"
+
+    return True, ""
+
+
 def _inverse_mapping(label_mapping: dict[str, int]) -> dict[int, str]:
     return {int(idx): label for label, idx in label_mapping.items()}
 
@@ -67,6 +87,10 @@ def main() -> None:
         result = json.loads(path.read_text(encoding="utf-8"))
         dataset = result["dataset"]
         for model_name, metrics in result["models"].items():
+            valid, reason = is_valid_model_evaluation(metrics)
+            if not valid:
+                print(f"Skipping invalid result: {dataset}/{model_name} ({reason})")
+                continue
             class_rows = _per_class_rows(dataset, model_name, result)
             minority = _minority_summary(class_rows)
             model_rows.append(
@@ -89,6 +113,9 @@ def main() -> None:
 
     model_rows.sort(key=lambda row: (row["dataset"], -row["macro_f1"], row["far"]))
     per_class_rows.sort(key=lambda row: (row["dataset"], row["model"], row["label"]))
+
+    if not model_rows:
+        raise RuntimeError("No valid model evaluation rows found.")
 
     comparison_path = RESULTS_DIR / "modular_model_evaluation.csv"
     with comparison_path.open("w", newline="", encoding="utf-8") as f:

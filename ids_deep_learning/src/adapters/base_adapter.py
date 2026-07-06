@@ -7,9 +7,10 @@ from urllib.request import urlretrieve
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
 
 from src.preprocessing.cleaning import clean_dataframe
-from src.preprocessing.encoding import fit_transform_categoricals
+from src.preprocessing.encoding import fit_transform_categoricals, transform_categoricals
 from src.preprocessing.label_mapping import map_binary_labels, map_multiclass_labels
 from src.preprocessing.scaling import fit_scaler, transform_with_scaler
 
@@ -27,6 +28,7 @@ class AdapterOutput:
     metadata: dict
     scaler: object
     encoders: dict
+    imputer: object
 
 
 class DatasetAdapter:
@@ -65,7 +67,12 @@ class DatasetAdapter:
 
     def clean(self, df: pd.DataFrame):
         df = df.drop(columns=self.drop_columns, errors="ignore")
-        return clean_dataframe(df)
+        return clean_dataframe(
+            df,
+            fill_numeric_with_median=False,
+            drop_constant_columns=False,
+            drop_remaining_missing=False,
+        )
 
     def map_labels(self, df: pd.DataFrame, classification_type: str = "multi"):
         if classification_type == "binary":
@@ -101,21 +108,58 @@ class DatasetAdapter:
     ) -> AdapterOutput:
         df = self.load() if df is None else df
         df, cleaning_report = self.clean(df)
+        label_cols = [
+            col
+            for col in {self.label_column, self.binary_label_column}
+            if col and col in df.columns
+        ]
+        if label_cols:
+            df = df.dropna(subset=label_cols)
         y, label_encoder, label_mapping = self.map_labels(df, classification_type)
+        if y.nunique() < 2:
+            raise ValueError(
+                f"{self.name} {classification_type} preprocessing requires at least 2 classes; "
+                f"found {y.nunique()} class. Check dataset cache/raw files and label mapping."
+            )
 
         drop_cols = {self.label_column, self.binary_label_column, "target", "target_name"}
         X = df.drop(columns=[c for c in drop_cols if c and c in df.columns], errors="ignore")
-        X, categorical_encoders = fit_transform_categoricals(X, self.categorical_columns)
-
-        X = X.apply(pd.to_numeric, errors="coerce")
-        X = X.replace([np.inf, -np.inf], np.nan)
-        X = X.dropna(axis=1, how="all")
-        X = X.fillna(X.median(numeric_only=True))
 
         X_train, X_val, X_test, y_train, y_val, y_test = self.split(X, y, test_size, val_size)
-        X_train_scaled, scaler = fit_scaler(X_train, scaler_type)
-        X_val_scaled = transform_with_scaler(X_val, scaler)
-        X_test_scaled = transform_with_scaler(X_test, scaler)
+
+        X_train, categorical_encoders = fit_transform_categoricals(X_train, self.categorical_columns)
+        X_val = transform_categoricals(X_val, categorical_encoders)
+        X_test = transform_categoricals(X_test, categorical_encoders)
+
+        X_train = X_train.apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan)
+        X_val = X_val.apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan)
+        X_test = X_test.apply(pd.to_numeric, errors="coerce").replace([np.inf, -np.inf], np.nan)
+
+        usable_columns = X_train.columns[~X_train.isna().all()].tolist()
+        X_train = X_train[usable_columns]
+        X_val = X_val[usable_columns]
+        X_test = X_test[usable_columns]
+
+        non_constant_columns = [
+            col for col in usable_columns if X_train[col].nunique(dropna=True) > 1
+        ]
+        if non_constant_columns:
+            X_train = X_train[non_constant_columns]
+            X_val = X_val[non_constant_columns]
+            X_test = X_test[non_constant_columns]
+
+        imputer = SimpleImputer(strategy="median")
+        X_train_imputed = imputer.fit_transform(X_train)
+        X_val_imputed = imputer.transform(X_val)
+        X_test_imputed = imputer.transform(X_test)
+
+        X_train_imputed = pd.DataFrame(X_train_imputed, columns=X_train.columns, index=X_train.index)
+        X_val_imputed = pd.DataFrame(X_val_imputed, columns=X_train.columns, index=X_val.index)
+        X_test_imputed = pd.DataFrame(X_test_imputed, columns=X_train.columns, index=X_test.index)
+
+        X_train_scaled, scaler = fit_scaler(X_train_imputed, scaler_type)
+        X_val_scaled = transform_with_scaler(X_val_imputed, scaler)
+        X_test_scaled = transform_with_scaler(X_test_imputed, scaler)
 
         return AdapterOutput(
             X_train=X_train_scaled,
@@ -124,10 +168,10 @@ class DatasetAdapter:
             y_train=y_train.to_numpy(),
             y_val=y_val.to_numpy(),
             y_test=y_test.to_numpy(),
-            feature_names=X.columns.tolist(),
+            feature_names=X_train.columns.tolist(),
             label_mapping=label_mapping,
             metadata={"dataset": self.name, "cleaning": cleaning_report.__dict__},
             scaler=scaler,
             encoders={"categorical": categorical_encoders, "label": label_encoder},
+            imputer=imputer,
         )
-

@@ -49,6 +49,8 @@ def main() -> None:
     print("[*] Loading scaler, encoders, and label mapping...")
     try:
         scaler = joblib.load(artifact_dir / "scaler.pkl")
+        imputer_path = artifact_dir / "imputer.pkl"
+        imputer = joblib.load(imputer_path) if imputer_path.exists() else None
         encoders_dict = joblib.load(artifact_dir / "encoders.pkl")
         cat_encoders = encoders_dict.get("categorical", {})
         
@@ -107,8 +109,13 @@ def main() -> None:
             if col in X_df.columns:
                 X_df[[col]] = encoder.transform(X_df[[col]].astype(str))
 
+        if imputer is not None:
+            X_model = imputer.transform(X_df)
+        else:
+            X_model = X_df
+
         # Scale features
-        X_scaled = scaler.transform(X_df)
+        X_scaled = scaler.transform(X_model)
     except Exception as e:
         print(f"[-] Preprocessing failed: {e}")
         return
@@ -127,8 +134,8 @@ def main() -> None:
             model = joblib.load(model_path)
             
             # Predict
-            preds = model.predict(X_df)
-            probs = model.predict_proba(X_df)
+            preds = model.predict(X_scaled)
+            probs = model.predict_proba(X_scaled)
             
             pred_classes = [inverse_labels[int(p)] for p in preds]
             confidences = probs.max(axis=1)

@@ -51,12 +51,15 @@ def save_artifacts(output, artifact_dir: Path) -> None:
     artifact_dir.mkdir(parents=True, exist_ok=True)
     joblib.dump(output.scaler, artifact_dir / "scaler.pkl")
     joblib.dump(output.encoders, artifact_dir / "encoders.pkl")
+    if getattr(output, "imputer", None) is not None:
+        joblib.dump(output.imputer, artifact_dir / "imputer.pkl")
     (artifact_dir / "label_mapping.json").write_text(json.dumps(output.label_mapping, indent=2), encoding="utf-8")
     config = {
         "feature_names": output.feature_names,
         "label_mapping": "label_mapping.json",
         "scaler": "scaler.pkl",
         "encoders": "encoders.pkl",
+        "imputer": "imputer.pkl",
     }
     (artifact_dir / "inference_config.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
 

@@ -32,6 +32,7 @@ def clean_dataframe(
     drop_duplicates: bool = True,
     drop_constant_columns: bool = True,
     fill_numeric_with_median: bool = True,
+    drop_remaining_missing: bool = True,
 ) -> tuple[pd.DataFrame, CleaningReport]:
     rows_before = len(df)
     df = normalize_column_names(df)
@@ -49,7 +50,8 @@ def clean_dataframe(
             if df[col].isna().any():
                 df[col] = df[col].fillna(df[col].median())
 
-    df = df.dropna()
+    if drop_remaining_missing:
+        df = df.dropna()
 
     removed = []
     protected_columns = {"label", "attack_cat", "target", "target_name"}
