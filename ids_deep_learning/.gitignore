@@ -7,6 +7,8 @@ data/cache/
 venv/
 env/
 .venv/
+.venv_broken_20260707/
+.venv_partial_20260707_2/
 .env
 .env.*
 __pycache__/
