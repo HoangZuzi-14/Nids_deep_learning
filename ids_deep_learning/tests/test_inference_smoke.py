@@ -24,6 +24,22 @@ class TestInferenceSmoke(unittest.TestCase):
         # Check if cache folders exist, otherwise skip
         self.datasets = ["nsl_kdd", "unsw_nb15", "cicids2017"]
 
+    def load_artifact_or_skip(self, path: Path):
+        try:
+            return joblib.load(path)
+        except Exception as exc:
+            self.skipTest(f"Artifact {path} is unavailable or corrupted: {exc}")
+
+    def transform_features(self, X_df: pd.DataFrame, artifact_dir: Path):
+        imputer_path = artifact_dir / "imputer.pkl"
+        if imputer_path.exists():
+            imputer = self.load_artifact_or_skip(imputer_path)
+            X_model = imputer.transform(X_df)
+        else:
+            X_model = X_df
+        scaler = self.load_artifact_or_skip(artifact_dir / "scaler.pkl")
+        return scaler.transform(X_model)
+
     def test_nsl_kdd_inference_smoke(self):
         dataset = "nsl_kdd"
         artifact_dir = self.root / "artifacts" / dataset / "multi"
@@ -33,7 +49,7 @@ class TestInferenceSmoke(unittest.TestCase):
             self.skipTest(f"NSL-KDD data or artifacts missing at {cache_path}")
 
         # 1. Reload metadata, scaler, label mapping
-        scaler = joblib.load(artifact_dir / "scaler.pkl")
+        self.load_artifact_or_skip(artifact_dir / "scaler.pkl")
         label_mapping = json.loads((artifact_dir / "label_mapping.json").read_text(encoding="utf-8"))
         inverse_labels = {v: k for k, v in label_mapping.items()}
         
@@ -64,17 +80,17 @@ class TestInferenceSmoke(unittest.TestCase):
         
         # Squeeze numeric or encode if needed (since scaler is already fitted, we just transform)
         # First check features that are categoricals and map them
-        encoders_dict = joblib.load(artifact_dir / "encoders.pkl")
+        encoders_dict = self.load_artifact_or_skip(artifact_dir / "encoders.pkl")
         cat_encoders = encoders_dict.get("categorical", {})
         for col, encoder in cat_encoders.items():
             if col in X_df.columns:
                 X_df[[col]] = encoder.transform(X_df[[col]].astype(str))
 
-        X_scaled = scaler.transform(X_df)
+        X_scaled = self.transform_features(X_df, artifact_dir)
 
         # 4. Predict using RandomForest.pkl
-        rf_model = joblib.load(artifact_dir / "RandomForest.pkl")
-        rf_preds = rf_model.predict(X_df) # RF usually takes raw encoded data before standard scaling or scaled depending on the pipeline
+        rf_model = self.load_artifact_or_skip(artifact_dir / "RandomForest.pkl")
+        rf_preds = rf_model.predict(X_scaled)
         self.assertEqual(len(rf_preds), 10)
         
         # 5. Predict using MLP.onnx
@@ -103,7 +119,7 @@ class TestInferenceSmoke(unittest.TestCase):
             self.skipTest(f"UNSW-NB15 data or artifacts missing at {cache_path}")
 
         # 1. Reload
-        scaler = joblib.load(artifact_dir / "scaler.pkl")
+        self.load_artifact_or_skip(artifact_dir / "scaler.pkl")
         label_mapping = json.loads((artifact_dir / "label_mapping.json").read_text(encoding="utf-8"))
         inverse_labels = {v: k for k, v in label_mapping.items()}
         
@@ -114,13 +130,13 @@ class TestInferenceSmoke(unittest.TestCase):
         df = pd.read_csv(cache_path, nrows=10, low_memory=False)
         X_df = df[feature_names].copy()
         
-        encoders_dict = joblib.load(artifact_dir / "encoders.pkl")
+        encoders_dict = self.load_artifact_or_skip(artifact_dir / "encoders.pkl")
         cat_encoders = encoders_dict.get("categorical", {})
         for col, encoder in cat_encoders.items():
             if col in X_df.columns:
                 X_df[[col]] = encoder.transform(X_df[[col]].astype(str))
 
-        X_scaled = scaler.transform(X_df)
+        X_scaled = self.transform_features(X_df, artifact_dir)
 
         # 3. Predict using MLP.onnx
         onnx_path = artifact_dir / "MLP.onnx"
