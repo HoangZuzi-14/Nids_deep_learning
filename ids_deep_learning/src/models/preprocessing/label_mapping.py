@@ -72,7 +72,10 @@ def map_multiclass_labels(
     labels: pd.Series, mapping: dict[str, str] | None = None
 ) -> tuple[pd.Series, LabelEncoder, dict[str, int]]:
     normalized = labels.map(_normalize_label)
-    mapped = normalized.map(mapping or {}).fillna(normalized.str.title())
+    normalized_mapping = {
+        _normalize_label(source): target for source, target in (mapping or {}).items()
+    }
+    mapped = normalized.map(normalized_mapping).fillna(normalized.str.title())
     encoder = LabelEncoder()
     encoded = pd.Series(encoder.fit_transform(mapped), index=labels.index)
     label_mapping = {name: int(idx) for idx, name in enumerate(encoder.classes_)}
