@@ -1,8 +1,12 @@
+# Local datasets and exported bundles
 *.csv
 *.zip
+*.parquet
+*.feather
+*.npy
+*.npz
 datasets/
-data/raw/
-data/cache/
+data/
 
 venv/
 env/
@@ -18,22 +22,21 @@ __pycache__/
 *.pt
 *.pth
 *.pkl
+*.joblib
 *.onnx
 *.onnx.data
+*.ckpt
 
 # Generated model/export artifacts
 artifacts/
 saved_models/
 
-# Generated experiment reports and plots
-results/*.json
-results/*.pdf
-results/*.png
-results/*.csv
-results/plots/
-results/*_report.md
-results/*_summary.md
-results/*_strategy.md
+# Generated experiment reports, metrics, and plots
+results/
+
+# Curated submission artifacts generated from results/
+!reports/
+!reports/**
 
 # Local agent/workflow notes
 AGENTS.md

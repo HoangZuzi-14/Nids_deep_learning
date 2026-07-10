@@ -1,0 +1,13 @@
+dataset,setting,accuracy,far,attack_recall,f1,suspicious_unknown_alerts,missed_attacks,recovered_attacks,recovery_rate,notes
+NSL-KDD,Classifier alone,0.9983,0.0003,0.9967,0.9982,,,,,Supervised RandomForest baseline
+NSL-KDD,Hybrid Decision (far_0.01),0.9945,0.0102,0.9999,0.9941,172,39,38,0.9744,Classifier plus Autoencoder risk threshold
+NSL-KDD,Hybrid Decision (far_0.03),0.9850,0.0281,1.0000,0.9841,413,39,39,1.0000,Classifier plus Autoencoder risk threshold
+NSL-KDD,Hybrid Decision (far_0.05),0.9748,0.0471,1.0000,0.9737,669,39,39,1.0000,Classifier plus Autoencoder risk threshold
+NSL-KDD,Hybrid Decision (far_0.1),0.9467,0.0998,1.0000,0.9458,1379,39,39,1.0000,Classifier plus Autoencoder risk threshold
+UNSW-NB15,Classifier alone,0.9599,0.0114,0.9147,0.9466,,,,,Supervised RandomForest baseline
+UNSW-NB15,Hybrid Decision (far_0.01),0.9599,0.0114,0.9147,0.9466,0,371,0,0.0000,Classifier plus Autoencoder risk threshold
+UNSW-NB15,Hybrid Decision (far_0.03),0.9637,0.0306,0.9547,0.9534,305,371,174,0.4690,Classifier plus Autoencoder risk threshold
+UNSW-NB15,Hybrid Decision (far_0.05),0.9577,0.0509,0.9713,0.9470,516,371,246,0.6631,Classifier plus Autoencoder risk threshold
+UNSW-NB15,Hybrid Decision (far_0.1),0.9373,0.0940,0.9867,0.9245,878,371,313,0.8437,Classifier plus Autoencoder risk threshold
+CICIDS2017,RandomForest multiclass baseline,0.9982,0.0008,,0.9732,,,,,10 percent inline sample
+CICIDS2017,Hybrid RF + IsolationForest (far_0.03),0.9748,0.0290,0.9938,0.9303,1181,53,0,0.0000,"Good binary recall, but no missed-RF attack recovery in this sample"

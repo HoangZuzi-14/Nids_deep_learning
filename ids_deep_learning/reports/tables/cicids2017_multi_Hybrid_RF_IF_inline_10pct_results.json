@@ -1,0 +1,211 @@
+{
+  "dataset": "cicids2017",
+  "classification": "multi",
+  "experiment": "Hybrid_RF_IF_inline_10pct",
+  "test_sample_fraction": 0.1,
+  "rf_artifact": "artifacts/cicids2017/multi/RandomForest.pkl",
+  "if_artifact": "artifacts/cicids2017/multi/anomaly/IsolationForest_BenignOnly_25pct.pkl",
+  "if_threshold_key": "far_0.03",
+  "if_threshold": 0.07429184504408529,
+  "n_test": 50448,
+  "n_test_benign": 41930,
+  "n_test_attack": 8518,
+  "rf_multiclass": {
+    "accuracy": 0.9982159847764034,
+    "precision_weighted": 0.9982097530016535,
+    "recall_weighted": 0.9982159847764034,
+    "macro_f1": 0.9732446099779436,
+    "weighted_f1": 0.9982121955710932,
+    "far": 0.0008347245409015025,
+    "confusion_matrix": [
+      [
+        41895,
+        8,
+        1,
+        1,
+        9,
+        0,
+        16,
+        0,
+        0
+      ],
+      [
+        9,
+        30,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        183,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        2560,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        17,
+        0,
+        0,
+        0,
+        3858,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        27,
+        0,
+        0,
+        0,
+        2,
+        0,
+        1787,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        43
+      ]
+    ],
+    "classification_report": {
+      "0": {
+        "precision": 0.9987365309430724,
+        "recall": 0.9991652754590985,
+        "f1-score": 0.9989508571973581,
+        "support": 41930.0
+      },
+      "1": {
+        "precision": 0.7894736842105263,
+        "recall": 0.7692307692307693,
+        "f1-score": 0.7792207792207793,
+        "support": 39.0
+      },
+      "2": {
+        "precision": 0.9945652173913043,
+        "recall": 1.0,
+        "f1-score": 0.997275204359673,
+        "support": 183.0
+      },
+      "3": {
+        "precision": 0.9996095275283092,
+        "recall": 1.0,
+        "f1-score": 0.9998047256395235,
+        "support": 2560.0
+      },
+      "4": {
+        "precision": 0.9971568880847764,
+        "recall": 0.9956129032258064,
+        "f1-score": 0.9963842975206612,
+        "support": 3875.0
+      },
+      "5": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1.0
+      },
+      "6": {
+        "precision": 0.9911259012756517,
+        "recall": 0.9840308370044053,
+        "f1-score": 0.9875656258634982,
+        "support": 1816.0
+      },
+      "7": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1.0
+      },
+      "8": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 43.0
+      },
+      "accuracy": 0.9982159847764034,
+      "macro avg": {
+        "precision": 0.97451863882596,
+        "recall": 0.9720044205466755,
+        "f1-score": 0.9732446099779436,
+        "support": 50448.0
+      },
+      "weighted avg": {
+        "precision": 0.9982097530016535,
+        "recall": 0.9982159847764034,
+        "f1-score": 0.9982121955710932,
+        "support": 50448.0
+      }
+    }
+  },
+  "if_binary": {
+    "accuracy": 0.8742467491278147,
+    "precision": 0.7396384479717814,
+    "recall": 0.39387180089222823,
+    "f1": 0.514018691588785,
+    "far": 0.028165990937276415,
+    "attack_recall": 0.39387180089222823
+  },
+  "hybrid_binary": {
+    "accuracy": 0.9748453853472883,
+    "precision": 0.874393141204421,
+    "recall": 0.9937778821319558,
+    "f1": 0.9302708940051652,
+    "far": 0.029000715478177917,
+    "attack_recall": 0.9937778821319558,
+    "suspicious_unknown_alerts": 1181,
+    "rf_missed_attacks": 53,
+    "rf_missed_attacks_caught_by_if": 0,
+    "rf_missed_attack_recovery_rate": 0.0
+  }
+}

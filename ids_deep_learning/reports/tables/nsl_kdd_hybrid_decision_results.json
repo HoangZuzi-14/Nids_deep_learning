@@ -1,0 +1,73 @@
+{
+  "dataset": "nsl_kdd",
+  "classification": "multi",
+  "classifier": "RandomForest",
+  "parameters": {
+    "alpha": 0.5,
+    "beta": 0.5,
+    "latent_dim": 16,
+    "sample_fraction": 1.0
+  },
+  "classifier_alone": {
+    "accuracy": 0.9982933121651121,
+    "precision": 0.9996578564707895,
+    "recall": 0.9966740576496674,
+    "f1": 0.9981637272067302,
+    "far": 0.00029697824634345533,
+    "attack_recall": 0.9966740576496674
+  },
+  "hybrid_evaluations": {
+    "far_0.01": {
+      "accuracy": 0.994483032347688,
+      "precision": 0.9883671921099216,
+      "recall": 0.9999147194269146,
+      "f1": 0.9941074229513757,
+      "far": 0.010245749498849209,
+      "attack_recall": 0.9999147194269146,
+      "threshold": 0.04256494420056688,
+      "suspicious_unknown_alerts": 172,
+      "classifier_missed_attacks": 39,
+      "recovered_attacks_by_ae": 38,
+      "attack_recovery_rate": 0.9743589743589743
+    },
+    "far_0.03": {
+      "accuracy": 0.9849970232188926,
+      "precision": 0.9687706543291474,
+      "recall": 1.0,
+      "f1": 0.9841376416281997,
+      "far": 0.028064444279456528,
+      "attack_recall": 1.0,
+      "threshold": 0.0150065381607306,
+      "suspicious_unknown_alerts": 413,
+      "classifier_missed_attacks": 39,
+      "recovered_attacks_by_ae": 39,
+      "attack_recovery_rate": 1.0
+    },
+    "far_0.05": {
+      "accuracy": 0.974836277039095,
+      "precision": 0.948705501618123,
+      "recall": 1.0,
+      "f1": 0.9736776550693349,
+      "far": 0.04707105204543767,
+      "attack_recall": 1.0,
+      "threshold": 0.007504625834834729,
+      "suspicious_unknown_alerts": 669,
+      "classifier_missed_attacks": 39,
+      "recovered_attacks_by_ae": 39,
+      "attack_recovery_rate": 1.0
+    },
+    "far_0.1": {
+      "accuracy": 0.9466560825560627,
+      "precision": 0.8971690895179801,
+      "recall": 1.0,
+      "f1": 0.9457977093079529,
+      "far": 0.099784690771401,
+      "attack_recall": 1.0,
+      "threshold": 0.002502412268377627,
+      "suspicious_unknown_alerts": 1379,
+      "classifier_missed_attacks": 39,
+      "recovered_attacks_by_ae": 39,
+      "attack_recovery_rate": 1.0
+    }
+  }
+}

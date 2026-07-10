@@ -1,0 +1,4 @@
+dataset,family,best_model,accuracy,macro_f1,weighted_f1,far,train_seconds
+NSL-KDD,ML,LightGBM,0.9992,0.9658,0.9992,0.0005,20.74
+UNSW-NB15,ML,LightGBM,0.8761,0.5536,0.8817,0.0348,11.10
+CICIDS2017,ML,Random Forest,0.9986,0.9762,0.9985,0.0007,1703.98

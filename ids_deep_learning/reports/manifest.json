@@ -1,0 +1,102 @@
+{
+  "source": "Generated from local results/ directory.",
+  "missing_sources": [],
+  "files": [
+    {
+      "path": "figures/final/confusion_matrix_cicids2017_dl_BiLSTMAttention_Modular.png",
+      "size_bytes": 107942
+    },
+    {
+      "path": "figures/final/confusion_matrix_cicids2017_ml_RandomForest.png",
+      "size_bytes": 105643
+    },
+    {
+      "path": "figures/final/confusion_matrix_nsl_kdd_ml_LightGBM.png",
+      "size_bytes": 53332
+    },
+    {
+      "path": "figures/final/confusion_matrix_unsw_nb15_ml_LightGBM.png",
+      "size_bytes": 116899
+    },
+    {
+      "path": "figures/final/far_by_model.png",
+      "size_bytes": 97964
+    },
+    {
+      "path": "figures/final/macro_f1_by_model.png",
+      "size_bytes": 101989
+    },
+    {
+      "path": "figures/final/macro_f1_heatmap.png",
+      "size_bytes": 82153
+    },
+    {
+      "path": "figures/final/macro_f1_vs_far.png",
+      "size_bytes": 125378
+    },
+    {
+      "path": "figures/final/weighted_f1_by_model.png",
+      "size_bytes": 103252
+    },
+    {
+      "path": "figures/hybrid/hybrid_recovery_percentage.png",
+      "size_bytes": 157289
+    },
+    {
+      "path": "figures/hybrid/nsl_kdd_hybrid_risk_distribution.png",
+      "size_bytes": 142083
+    },
+    {
+      "path": "figures/hybrid/unsw_nb15_hybrid_risk_distribution.png",
+      "size_bytes": 154897
+    },
+    {
+      "path": "final_summary.md",
+      "size_bytes": 2744
+    },
+    {
+      "path": "manifest.json",
+      "size_bytes": 2460
+    },
+    {
+      "path": "notebooks/final_project_report.ipynb",
+      "size_bytes": 9237
+    },
+    {
+      "path": "tables/cicids2017_multi_Hybrid_RF_IF_inline_10pct_results.json",
+      "size_bytes": 4154
+    },
+    {
+      "path": "tables/final_ml_vs_dl_comparison.csv",
+      "size_bytes": 407
+    },
+    {
+      "path": "tables/final_model_evaluation.csv",
+      "size_bytes": 10512
+    },
+    {
+      "path": "tables/final_model_ranking.csv",
+      "size_bytes": 10700
+    },
+    {
+      "path": "tables/final_per_class_metrics.csv",
+      "size_bytes": 20217
+    },
+    {
+      "path": "tables/hybrid_decision_summary.csv",
+      "size_bytes": 1575
+    },
+    {
+      "path": "tables/key_results.csv",
+      "size_bytes": 252
+    },
+    {
+      "path": "tables/nsl_kdd_hybrid_decision_results.json",
+      "size_bytes": 2208
+    },
+    {
+      "path": "tables/unsw_nb15_hybrid_decision_results.json",
+      "size_bytes": 2319
+    }
+  ]
+}

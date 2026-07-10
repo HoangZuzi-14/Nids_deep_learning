@@ -1,7 +1,7 @@
 datasets:
   nsl_kdd:
     name: NSL-KDD
-    cache_path: C:/nids_data/nsl_kdd/KDDTrain+.txt
+    cache_path: data/cache/nsl_kdd/KDDTrain+.txt
     remote_url: https://raw.githubusercontent.com/defcom17/NSL_KDD/master/KDDTrain+.txt
     label_column: label
     drop_columns:
@@ -19,7 +19,7 @@ datasets:
     categorical_columns: []
   unsw_nb15:
     name: UNSW-NB15
-    cache_path: C:/nids_data/unsw_nb15/training-set.csv
+    cache_path: data/cache/unsw_nb15/training-set.csv
     remote_url: https://raw.githubusercontent.com/ushukkla/nospammers/master/UNSW_NB15_training-set.csv
     label_column: attack_cat
     binary_label_column: label
