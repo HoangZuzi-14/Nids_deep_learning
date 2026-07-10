@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from pathlib import Path
 
 import joblib
@@ -31,7 +32,10 @@ ADAPTERS = {
 
 
 def _repo_path(path: str | None, root: Path):
-    return root / path if path else None
+    if not path:
+        return None
+    path_obj = Path(path)
+    return path_obj if path_obj.is_absolute() else root / path_obj
 
 
 def build_adapter(dataset_key: str, datasets_config: dict, root: Path, seed: int):
@@ -112,7 +116,9 @@ def run_baselines(dataset_key: str, classification_type: str, root: Path) -> dic
 
     for name, model in models.items():
         print(f"[*] Training baseline model: {name} on {dataset_key}...")
+        start = time.perf_counter()
         model.fit(output.X_train, output.y_train)
+        train_seconds = time.perf_counter() - start
         pred = model.predict(output.X_test)
         probs = model.predict_proba(output.X_test)
         
@@ -122,6 +128,7 @@ def run_baselines(dataset_key: str, classification_type: str, root: Path) -> dic
             y_probs=probs,
             benign_label=benign_label_index(output.label_mapping)
         )
+        metrics["train_seconds"] = train_seconds
         report["models"][name] = metrics
         joblib.dump(model, artifact_dir / f"{name}.pkl")
 

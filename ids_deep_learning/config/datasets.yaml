@@ -1,7 +1,7 @@
 datasets:
   nsl_kdd:
     name: NSL-KDD
-    cache_path: /content/nids_data/nsl_kdd/KDDTrain+.txt
+    cache_path: C:/nids_data/nsl_kdd/KDDTrain+.txt
     remote_url: https://raw.githubusercontent.com/defcom17/NSL_KDD/master/KDDTrain+.txt
     label_column: label
     drop_columns:
@@ -12,14 +12,14 @@ datasets:
     - flag
   cicids2017:
     name: CICIDS2017
-    raw_dir: /content/drive/MyDrive/nids_deep_learning/ids_deep_learning/data/raw/cicids2017
-    cache_path: /content/cicids2017_cache/merged.csv
+    raw_dir: data/raw/cicids2017
+    cache_path: data/cache/cicids2017/merged.csv
     remote_url: null
     label_column: label
     categorical_columns: []
   unsw_nb15:
     name: UNSW-NB15
-    cache_path: /content/nids_data/unsw_nb15/training-set.csv
+    cache_path: C:/nids_data/unsw_nb15/training-set.csv
     remote_url: https://raw.githubusercontent.com/ushukkla/nospammers/master/UNSW_NB15_training-set.csv
     label_column: attack_cat
     binary_label_column: label
